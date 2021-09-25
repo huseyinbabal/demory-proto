@@ -29,4 +29,4 @@ jobs:
           git config --global user.name "Huseyin BABAL"
           git add .
           git commit -am "proto update"
-          git push origin master
+          git push origin main
