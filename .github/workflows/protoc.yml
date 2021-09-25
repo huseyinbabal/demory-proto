@@ -10,6 +10,10 @@ jobs:
     name: "Protoc Generate"
     runs-on: ubuntu-latest
     steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
       - uses: actions/checkout@v2
       - name: "Generate for Go"
         run: |
