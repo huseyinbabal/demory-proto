@@ -1,0 +1,19 @@
+name: "Protoc"
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+jobs:
+  protoc:
+    name: "Protoc Generate"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Generate for Go"
+        run: |
+          apt install -y protobuf-compiler
+          protoc --go_out=./go --go_opt=paths=source_relative --go-grpc_out=./go --go-grpc_opt=paths=source_relative ./**/*.proto
