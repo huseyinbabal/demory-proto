@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option go_package="github.com/huseyinbabal/demory-proto/golang/demory";
+
+message MapPutRequest {
+  string key = 1;
+  string value = 2;
+}
+
+message MapGetRequest{
+  string key = 1;
+}
+
+message MapGetResponse{
+  string value = 1;
+}
+
+service Demory{
+  rpc MapPut(MapPutRequest) returns (google.protobuf.Empty){}
+  rpc MapGet(MapGetRequest) returns (MapGetResponse){}
+}
