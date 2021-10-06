@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 type DemoryClient interface {
 	MapPut(ctx context.Context, in *MapPutRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	MapGet(ctx context.Context, in *MapGetRequest, opts ...grpc.CallOption) (*MapGetResponse, error)
+	JoinToCluster(ctx context.Context, in *JoinToClusterRequest, opts ...grpc.CallOption) (*JoinToClusterResponse, error)
 }
 
 type demoryClient struct {
@@ -49,12 +50,22 @@ func (c *demoryClient) MapGet(ctx context.Context, in *MapGetRequest, opts ...gr
 	return out, nil
 }
 
+func (c *demoryClient) JoinToCluster(ctx context.Context, in *JoinToClusterRequest, opts ...grpc.CallOption) (*JoinToClusterResponse, error) {
+	out := new(JoinToClusterResponse)
+	err := c.cc.Invoke(ctx, "/Demory/JoinToCluster", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DemoryServer is the server API for Demory service.
 // All implementations must embed UnimplementedDemoryServer
 // for forward compatibility
 type DemoryServer interface {
 	MapPut(context.Context, *MapPutRequest) (*empty.Empty, error)
 	MapGet(context.Context, *MapGetRequest) (*MapGetResponse, error)
+	JoinToCluster(context.Context, *JoinToClusterRequest) (*JoinToClusterResponse, error)
 	mustEmbedUnimplementedDemoryServer()
 }
 
@@ -67,6 +78,9 @@ func (UnimplementedDemoryServer) MapPut(context.Context, *MapPutRequest) (*empty
 }
 func (UnimplementedDemoryServer) MapGet(context.Context, *MapGetRequest) (*MapGetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MapGet not implemented")
+}
+func (UnimplementedDemoryServer) JoinToCluster(context.Context, *JoinToClusterRequest) (*JoinToClusterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method JoinToCluster not implemented")
 }
 func (UnimplementedDemoryServer) mustEmbedUnimplementedDemoryServer() {}
 
@@ -117,6 +131,24 @@ func _Demory_MapGet_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Demory_JoinToCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JoinToClusterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoryServer).JoinToCluster(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Demory/JoinToCluster",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoryServer).JoinToCluster(ctx, req.(*JoinToClusterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Demory_ServiceDesc is the grpc.ServiceDesc for Demory service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -131,6 +163,10 @@ var Demory_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MapGet",
 			Handler:    _Demory_MapGet_Handler,
+		},
+		{
+			MethodName: "JoinToCluster",
+			Handler:    _Demory_JoinToCluster_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
