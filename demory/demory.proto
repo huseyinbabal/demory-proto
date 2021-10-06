@@ -18,7 +18,9 @@ message MapGetResponse{
 }
 
 message JoinToClusterRequest {
-  string source_address = 1;
+  string server_address = 1;
+  string server_id = 2;
+  uint64 previous_index = 3;
 }
 
 message JoinToClusterResponse {
