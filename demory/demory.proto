@@ -17,7 +17,20 @@ message MapGetResponse{
   string value = 1;
 }
 
+message JoinToClusterRequest {
+  string source_address = 1;
+}
+
+message JoinToClusterResponse {
+  enum JoinResult {
+    SUCCESS = 0;
+    NOT_A_LEADER = 1;
+  }
+  JoinResult result = 1;
+}
+
 service Demory{
   rpc MapPut(MapPutRequest) returns (google.protobuf.Empty){}
   rpc MapGet(MapGetRequest) returns (MapGetResponse){}
+  rpc JoinToCluster(JoinToClusterRequest) returns (JoinToClusterResponse){}
 }
