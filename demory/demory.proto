@@ -5,16 +5,18 @@ import "google/protobuf/empty.proto";
 option go_package="github.com/huseyinbabal/demory-proto/golang/demory";
 
 message MapPutRequest {
-  string key = 1;
-  string value = 2;
+  string name = 1;
+  string key = 2;
+  bytes value = 3;
 }
 
 message MapGetRequest{
-  string key = 1;
+  string name = 1;
+  string key = 2;
 }
 
 message MapGetResponse{
-  string value = 1;
+  bytes value = 1;
 }
 
 message JoinToClusterRequest {
