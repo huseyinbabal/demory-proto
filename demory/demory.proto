@@ -54,6 +54,6 @@ service Demory{
   rpc MapGet(MapGetRequest) returns (MapGetResponse){}
   rpc MapPutIfAbsent(MapPutIfAbsentRequest) returns (google.protobuf.Empty){}
   rpc Remove(MapRemoveRequest) returns (google.protobuf.Empty){}
-  rpc Clear(MapGetRequest) returns (google.protobuf.Empty){}
+  rpc Clear(MapClearRequest) returns (google.protobuf.Empty){}
   rpc JoinToCluster(JoinToClusterRequest) returns (JoinToClusterResponse){}
 }
