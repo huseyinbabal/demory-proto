@@ -10,6 +10,12 @@ message MapPutRequest {
   bytes value = 3;
 }
 
+message MapPutIfAbsentRequest {
+  string name = 1;
+  string key = 2;
+  bytes value = 3;
+}
+
 message MapGetRequest{
   string name = 1;
   string key = 2;
@@ -17,6 +23,16 @@ message MapGetRequest{
 
 message MapGetResponse{
   bytes value = 1;
+}
+
+message MapRemoveRequest{
+  string name = 1;
+  string key = 2;
+}
+
+message MapClearRequest{
+  string name = 1;
+  string key = 2;
 }
 
 message JoinToClusterRequest {
@@ -36,5 +52,8 @@ message JoinToClusterResponse {
 service Demory{
   rpc MapPut(MapPutRequest) returns (google.protobuf.Empty){}
   rpc MapGet(MapGetRequest) returns (MapGetResponse){}
+  rpc MapPutIfAbsent(MapPutIfAbsentRequest) returns (google.protobuf.Empty){}
+  rpc Remove(MapRemoveRequest) returns (google.protobuf.Empty){}
+  rpc Clear(MapGetRequest) returns (google.protobuf.Empty){}
   rpc JoinToCluster(JoinToClusterRequest) returns (JoinToClusterResponse){}
 }
