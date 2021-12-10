@@ -19,11 +19,18 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DemoryClient interface {
+	// Map
 	MapPut(ctx context.Context, in *MapPutRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	MapGet(ctx context.Context, in *MapGetRequest, opts ...grpc.CallOption) (*MapGetResponse, error)
 	MapPutIfAbsent(ctx context.Context, in *MapPutIfAbsentRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	Remove(ctx context.Context, in *MapRemoveRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	Clear(ctx context.Context, in *MapClearRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	MapRemove(ctx context.Context, in *MapRemoveRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	MapClear(ctx context.Context, in *MapClearRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	// Cache
+	CachePut(ctx context.Context, in *CachePutRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	CacheGet(ctx context.Context, in *CacheGetRequest, opts ...grpc.CallOption) (*CacheGetResponse, error)
+	CacheRemove(ctx context.Context, in *CacheRemoveRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	CacheClear(ctx context.Context, in *CacheClearRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	// Server
 	JoinToCluster(ctx context.Context, in *JoinToClusterRequest, opts ...grpc.CallOption) (*JoinToClusterResponse, error)
 }
 
@@ -62,18 +69,54 @@ func (c *demoryClient) MapPutIfAbsent(ctx context.Context, in *MapPutIfAbsentReq
 	return out, nil
 }
 
-func (c *demoryClient) Remove(ctx context.Context, in *MapRemoveRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *demoryClient) MapRemove(ctx context.Context, in *MapRemoveRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/Demory/Remove", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Demory/MapRemove", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *demoryClient) Clear(ctx context.Context, in *MapClearRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *demoryClient) MapClear(ctx context.Context, in *MapClearRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/Demory/Clear", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Demory/MapClear", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *demoryClient) CachePut(ctx context.Context, in *CachePutRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/Demory/CachePut", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *demoryClient) CacheGet(ctx context.Context, in *CacheGetRequest, opts ...grpc.CallOption) (*CacheGetResponse, error) {
+	out := new(CacheGetResponse)
+	err := c.cc.Invoke(ctx, "/Demory/CacheGet", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *demoryClient) CacheRemove(ctx context.Context, in *CacheRemoveRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/Demory/CacheRemove", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *demoryClient) CacheClear(ctx context.Context, in *CacheClearRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/Demory/CacheClear", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,11 +136,18 @@ func (c *demoryClient) JoinToCluster(ctx context.Context, in *JoinToClusterReque
 // All implementations must embed UnimplementedDemoryServer
 // for forward compatibility
 type DemoryServer interface {
+	// Map
 	MapPut(context.Context, *MapPutRequest) (*empty.Empty, error)
 	MapGet(context.Context, *MapGetRequest) (*MapGetResponse, error)
 	MapPutIfAbsent(context.Context, *MapPutIfAbsentRequest) (*empty.Empty, error)
-	Remove(context.Context, *MapRemoveRequest) (*empty.Empty, error)
-	Clear(context.Context, *MapClearRequest) (*empty.Empty, error)
+	MapRemove(context.Context, *MapRemoveRequest) (*empty.Empty, error)
+	MapClear(context.Context, *MapClearRequest) (*empty.Empty, error)
+	// Cache
+	CachePut(context.Context, *CachePutRequest) (*empty.Empty, error)
+	CacheGet(context.Context, *CacheGetRequest) (*CacheGetResponse, error)
+	CacheRemove(context.Context, *CacheRemoveRequest) (*empty.Empty, error)
+	CacheClear(context.Context, *CacheClearRequest) (*empty.Empty, error)
+	// Server
 	JoinToCluster(context.Context, *JoinToClusterRequest) (*JoinToClusterResponse, error)
 	mustEmbedUnimplementedDemoryServer()
 }
@@ -115,11 +165,23 @@ func (UnimplementedDemoryServer) MapGet(context.Context, *MapGetRequest) (*MapGe
 func (UnimplementedDemoryServer) MapPutIfAbsent(context.Context, *MapPutIfAbsentRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MapPutIfAbsent not implemented")
 }
-func (UnimplementedDemoryServer) Remove(context.Context, *MapRemoveRequest) (*empty.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
+func (UnimplementedDemoryServer) MapRemove(context.Context, *MapRemoveRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MapRemove not implemented")
 }
-func (UnimplementedDemoryServer) Clear(context.Context, *MapClearRequest) (*empty.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Clear not implemented")
+func (UnimplementedDemoryServer) MapClear(context.Context, *MapClearRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MapClear not implemented")
+}
+func (UnimplementedDemoryServer) CachePut(context.Context, *CachePutRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CachePut not implemented")
+}
+func (UnimplementedDemoryServer) CacheGet(context.Context, *CacheGetRequest) (*CacheGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CacheGet not implemented")
+}
+func (UnimplementedDemoryServer) CacheRemove(context.Context, *CacheRemoveRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CacheRemove not implemented")
+}
+func (UnimplementedDemoryServer) CacheClear(context.Context, *CacheClearRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CacheClear not implemented")
 }
 func (UnimplementedDemoryServer) JoinToCluster(context.Context, *JoinToClusterRequest) (*JoinToClusterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method JoinToCluster not implemented")
@@ -191,38 +253,110 @@ func _Demory_MapPutIfAbsent_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Demory_Remove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Demory_MapRemove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MapRemoveRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DemoryServer).Remove(ctx, in)
+		return srv.(DemoryServer).MapRemove(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Demory/Remove",
+		FullMethod: "/Demory/MapRemove",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DemoryServer).Remove(ctx, req.(*MapRemoveRequest))
+		return srv.(DemoryServer).MapRemove(ctx, req.(*MapRemoveRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Demory_Clear_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Demory_MapClear_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MapClearRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DemoryServer).Clear(ctx, in)
+		return srv.(DemoryServer).MapClear(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Demory/Clear",
+		FullMethod: "/Demory/MapClear",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DemoryServer).Clear(ctx, req.(*MapClearRequest))
+		return srv.(DemoryServer).MapClear(ctx, req.(*MapClearRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Demory_CachePut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CachePutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoryServer).CachePut(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Demory/CachePut",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoryServer).CachePut(ctx, req.(*CachePutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Demory_CacheGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CacheGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoryServer).CacheGet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Demory/CacheGet",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoryServer).CacheGet(ctx, req.(*CacheGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Demory_CacheRemove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CacheRemoveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoryServer).CacheRemove(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Demory/CacheRemove",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoryServer).CacheRemove(ctx, req.(*CacheRemoveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Demory_CacheClear_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CacheClearRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoryServer).CacheClear(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Demory/CacheClear",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoryServer).CacheClear(ctx, req.(*CacheClearRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -265,12 +399,28 @@ var Demory_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Demory_MapPutIfAbsent_Handler,
 		},
 		{
-			MethodName: "Remove",
-			Handler:    _Demory_Remove_Handler,
+			MethodName: "MapRemove",
+			Handler:    _Demory_MapRemove_Handler,
 		},
 		{
-			MethodName: "Clear",
-			Handler:    _Demory_Clear_Handler,
+			MethodName: "MapClear",
+			Handler:    _Demory_MapClear_Handler,
+		},
+		{
+			MethodName: "CachePut",
+			Handler:    _Demory_CachePut_Handler,
+		},
+		{
+			MethodName: "CacheGet",
+			Handler:    _Demory_CacheGet_Handler,
+		},
+		{
+			MethodName: "CacheRemove",
+			Handler:    _Demory_CacheRemove_Handler,
+		},
+		{
+			MethodName: "CacheClear",
+			Handler:    _Demory_CacheClear_Handler,
 		},
 		{
 			MethodName: "JoinToCluster",
