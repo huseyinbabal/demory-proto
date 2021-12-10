@@ -35,10 +35,29 @@ message MapClearRequest{
   string key = 2;
 }
 
-message JoinToClusterRequest {
-  string server_address = 1;
-  string server_id = 2;
-  uint64 previous_index = 3;
+message CacheGetRequest{
+  string name = 1;
+  string key = 2;
+}
+
+message CacheGetResponse{
+  bytes value = 1;
+}
+
+message CacheRemoveRequest{
+  string name = 1;
+  string key = 2;
+}
+
+message CacheClearRequest{
+  string name = 1;
+  string key = 2;
+}
+
+message CachePutRequest {
+  string name = 1;
+  string key = 2;
+  bytes value = 3;
 }
 
 message JoinToClusterResponse {
@@ -49,11 +68,26 @@ message JoinToClusterResponse {
   JoinResult result = 1;
 }
 
+message JoinToClusterRequest {
+  string server_address = 1;
+  string server_id = 2;
+  uint64 previous_index = 3;
+}
+
 service Demory{
+  // Map
   rpc MapPut(MapPutRequest) returns (google.protobuf.Empty){}
   rpc MapGet(MapGetRequest) returns (MapGetResponse){}
   rpc MapPutIfAbsent(MapPutIfAbsentRequest) returns (google.protobuf.Empty){}
-  rpc Remove(MapRemoveRequest) returns (google.protobuf.Empty){}
-  rpc Clear(MapClearRequest) returns (google.protobuf.Empty){}
+  rpc MapRemove(MapRemoveRequest) returns (google.protobuf.Empty){}
+  rpc MapClear(MapClearRequest) returns (google.protobuf.Empty){}
+
+  // Cache
+  rpc CachePut(CachePutRequest) returns (google.protobuf.Empty){}
+  rpc CacheGet(CacheGetRequest) returns (CacheGetResponse){}
+  rpc CacheRemove(CacheRemoveRequest) returns (google.protobuf.Empty){}
+  rpc CacheClear(CacheClearRequest) returns (google.protobuf.Empty){}
+
+  // Server
   rpc JoinToCluster(JoinToClusterRequest) returns (JoinToClusterResponse){}
 }
