@@ -23,7 +23,7 @@ type DemoryClient interface {
 	MapGet(ctx context.Context, in *MapGetRequest, opts ...grpc.CallOption) (*MapGetResponse, error)
 	MapPutIfAbsent(ctx context.Context, in *MapPutIfAbsentRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	Remove(ctx context.Context, in *MapRemoveRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	Clear(ctx context.Context, in *MapGetRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	Clear(ctx context.Context, in *MapClearRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	JoinToCluster(ctx context.Context, in *JoinToClusterRequest, opts ...grpc.CallOption) (*JoinToClusterResponse, error)
 }
 
@@ -71,7 +71,7 @@ func (c *demoryClient) Remove(ctx context.Context, in *MapRemoveRequest, opts ..
 	return out, nil
 }
 
-func (c *demoryClient) Clear(ctx context.Context, in *MapGetRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *demoryClient) Clear(ctx context.Context, in *MapClearRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/Demory/Clear", in, out, opts...)
 	if err != nil {
@@ -97,7 +97,7 @@ type DemoryServer interface {
 	MapGet(context.Context, *MapGetRequest) (*MapGetResponse, error)
 	MapPutIfAbsent(context.Context, *MapPutIfAbsentRequest) (*empty.Empty, error)
 	Remove(context.Context, *MapRemoveRequest) (*empty.Empty, error)
-	Clear(context.Context, *MapGetRequest) (*empty.Empty, error)
+	Clear(context.Context, *MapClearRequest) (*empty.Empty, error)
 	JoinToCluster(context.Context, *JoinToClusterRequest) (*JoinToClusterResponse, error)
 	mustEmbedUnimplementedDemoryServer()
 }
@@ -118,7 +118,7 @@ func (UnimplementedDemoryServer) MapPutIfAbsent(context.Context, *MapPutIfAbsent
 func (UnimplementedDemoryServer) Remove(context.Context, *MapRemoveRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
 }
-func (UnimplementedDemoryServer) Clear(context.Context, *MapGetRequest) (*empty.Empty, error) {
+func (UnimplementedDemoryServer) Clear(context.Context, *MapClearRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Clear not implemented")
 }
 func (UnimplementedDemoryServer) JoinToCluster(context.Context, *JoinToClusterRequest) (*JoinToClusterResponse, error) {
@@ -210,7 +210,7 @@ func _Demory_Remove_Handler(srv interface{}, ctx context.Context, dec func(inter
 }
 
 func _Demory_Clear_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MapGetRequest)
+	in := new(MapClearRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -222,7 +222,7 @@ func _Demory_Clear_Handler(srv interface{}, ctx context.Context, dec func(interf
 		FullMethod: "/Demory/Clear",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DemoryServer).Clear(ctx, req.(*MapGetRequest))
+		return srv.(DemoryServer).Clear(ctx, req.(*MapClearRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
