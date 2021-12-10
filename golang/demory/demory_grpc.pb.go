@@ -21,6 +21,9 @@ const _ = grpc.SupportPackageIsVersion7
 type DemoryClient interface {
 	MapPut(ctx context.Context, in *MapPutRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	MapGet(ctx context.Context, in *MapGetRequest, opts ...grpc.CallOption) (*MapGetResponse, error)
+	MapPutIfAbsent(ctx context.Context, in *MapPutIfAbsentRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	Remove(ctx context.Context, in *MapRemoveRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	Clear(ctx context.Context, in *MapGetRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	JoinToCluster(ctx context.Context, in *JoinToClusterRequest, opts ...grpc.CallOption) (*JoinToClusterResponse, error)
 }
 
@@ -50,6 +53,33 @@ func (c *demoryClient) MapGet(ctx context.Context, in *MapGetRequest, opts ...gr
 	return out, nil
 }
 
+func (c *demoryClient) MapPutIfAbsent(ctx context.Context, in *MapPutIfAbsentRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/Demory/MapPutIfAbsent", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *demoryClient) Remove(ctx context.Context, in *MapRemoveRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/Demory/Remove", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *demoryClient) Clear(ctx context.Context, in *MapGetRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/Demory/Clear", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *demoryClient) JoinToCluster(ctx context.Context, in *JoinToClusterRequest, opts ...grpc.CallOption) (*JoinToClusterResponse, error) {
 	out := new(JoinToClusterResponse)
 	err := c.cc.Invoke(ctx, "/Demory/JoinToCluster", in, out, opts...)
@@ -65,6 +95,9 @@ func (c *demoryClient) JoinToCluster(ctx context.Context, in *JoinToClusterReque
 type DemoryServer interface {
 	MapPut(context.Context, *MapPutRequest) (*empty.Empty, error)
 	MapGet(context.Context, *MapGetRequest) (*MapGetResponse, error)
+	MapPutIfAbsent(context.Context, *MapPutIfAbsentRequest) (*empty.Empty, error)
+	Remove(context.Context, *MapRemoveRequest) (*empty.Empty, error)
+	Clear(context.Context, *MapGetRequest) (*empty.Empty, error)
 	JoinToCluster(context.Context, *JoinToClusterRequest) (*JoinToClusterResponse, error)
 	mustEmbedUnimplementedDemoryServer()
 }
@@ -78,6 +111,15 @@ func (UnimplementedDemoryServer) MapPut(context.Context, *MapPutRequest) (*empty
 }
 func (UnimplementedDemoryServer) MapGet(context.Context, *MapGetRequest) (*MapGetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MapGet not implemented")
+}
+func (UnimplementedDemoryServer) MapPutIfAbsent(context.Context, *MapPutIfAbsentRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MapPutIfAbsent not implemented")
+}
+func (UnimplementedDemoryServer) Remove(context.Context, *MapRemoveRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
+}
+func (UnimplementedDemoryServer) Clear(context.Context, *MapGetRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Clear not implemented")
 }
 func (UnimplementedDemoryServer) JoinToCluster(context.Context, *JoinToClusterRequest) (*JoinToClusterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method JoinToCluster not implemented")
@@ -131,6 +173,60 @@ func _Demory_MapGet_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Demory_MapPutIfAbsent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MapPutIfAbsentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoryServer).MapPutIfAbsent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Demory/MapPutIfAbsent",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoryServer).MapPutIfAbsent(ctx, req.(*MapPutIfAbsentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Demory_Remove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MapRemoveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoryServer).Remove(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Demory/Remove",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoryServer).Remove(ctx, req.(*MapRemoveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Demory_Clear_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MapGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DemoryServer).Clear(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Demory/Clear",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DemoryServer).Clear(ctx, req.(*MapGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Demory_JoinToCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(JoinToClusterRequest)
 	if err := dec(in); err != nil {
@@ -163,6 +259,18 @@ var Demory_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MapGet",
 			Handler:    _Demory_MapGet_Handler,
+		},
+		{
+			MethodName: "MapPutIfAbsent",
+			Handler:    _Demory_MapPutIfAbsent_Handler,
+		},
+		{
+			MethodName: "Remove",
+			Handler:    _Demory_Remove_Handler,
+		},
+		{
+			MethodName: "Clear",
+			Handler:    _Demory_Clear_Handler,
 		},
 		{
 			MethodName: "JoinToCluster",
